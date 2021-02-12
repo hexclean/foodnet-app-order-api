@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json({ extended: false }));
 app.use("/api/auth", require("./api/auth"));
+app.use("/api/order", require("./api/order"));
 
 sequelize
   .sync()

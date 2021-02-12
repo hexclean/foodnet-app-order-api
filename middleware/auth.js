@@ -16,12 +16,11 @@ module.exports = async function (req, res, next) {
       if (error) {
         res.status(401).json({ msg: "Token is not valid" });
       } else {
-        req.user = decoded.user;
+        req.admin = decoded.admin;
         next();
       }
     });
   } catch (err) {
-    console.error("Something wrong...");
     res.status(500).json({ msg: "Server error" });
   }
 };
