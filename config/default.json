@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb://foodapp:foodapp@foodapp-shard-00-00-sxheo.mongodb.net:27017,foodapp-shard-00-01-sxheo.mongodb.net:27017,foodapp-shard-00-02-sxheo.mongodb.net:27017/test?ssl=true&replicaSet=foodApp-shard-0&authSource=admin&retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken"
+}
