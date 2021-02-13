@@ -283,6 +283,11 @@ router.get("/:lang", auth, async (req, res) => {
       for (let i = 0; i < orders.length; i++) {
         const resultArr = {
           id: orders[i].encodedKey,
+          location: orders[i].LocationName.LocationNameTranslations[0].name,
+          totalPrice: orders[i].totalPrice,
+          createdAt: orders[i].createdAt.toLocaleString("en-GB", {
+            timeZone: "Europe/Helsinki",
+          }),
         };
         result.push(resultArr);
 
