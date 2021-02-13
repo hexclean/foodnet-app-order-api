@@ -9,7 +9,7 @@ module.exports = async function (req, res, next) {
   try {
     await jwt.verify(token, config.get("jwtSecret"), (error, decoded) => {
       if (token != undefined) {
-        req.user = decoded.user;
+        req.admin = decoded.admin;
         next();
       } else {
         next();
