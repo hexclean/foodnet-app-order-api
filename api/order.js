@@ -41,7 +41,7 @@ const mg = mailgun({
 // @desc     Create an order
 // @access   Private
 
-router.get("/:lang", auth, async (req, res) => {
+router.get("/:lang/:id", auth, async (req, res) => {
   let languageCode;
   let orderList = [];
   if (req.params.lang == "ro") {
@@ -52,7 +52,11 @@ router.get("/:lang", auth, async (req, res) => {
 
   const orders = await Order.findAll({
     order: [["createdAt", "DESC"]],
-    where: { orderStatusId: 1, restaurantId: req.admin.id },
+    where: {
+      orderStatusId: 1,
+      restaurantId: req.admin.id,
+      encodedKey: req.params.id,
+    },
     include: [
       {
         model: OrderItem,
@@ -248,82 +252,19 @@ router.get("/:lang", auth, async (req, res) => {
   });
 });
 
-router.get("/:lang/:id", auth, async (req, res) => {
+router.get("/:lang", auth, async (req, res) => {
   try {
     let languageCode;
 
     if (req.params.lang == "ro") {
       languageCode = 1;
-    } else if (req.params.lang == "hu") {
-      languageCode = 2;
     } else {
-      languageCode = 3;
+      languageCode = 2;
     }
     const orders = await Order.findAll({
       order: [["createdAt", "DESC"]],
-      where: { userId: req.user.id, encodedKey: req.params.id },
+      where: { restaurantId: req.admin.id, orderStatusId: 1 },
       include: [
-        {
-          model: OrderItem,
-
-          include: [
-            {
-              model: OrderItemExtra,
-              include: [
-                {
-                  model: Extra,
-                  include: [
-                    {
-                      model: ExtraTranslation,
-                      where: { languageId: languageCode },
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              model: Variant,
-              include: [
-                {
-                  model: ProductFinal,
-                  where: { active: 1 },
-                  include: [
-                    {
-                      model: Product,
-                      include: [
-                        {
-                          model: ProductTranslation,
-                          where: { languageId: languageCode },
-                        },
-                        {
-                          model: ProductHasAllergen,
-                          where: { active: 1 },
-                          include: [
-                            {
-                              model: Allergen,
-                              include: [
-                                {
-                                  model: AllergenTranslation,
-                                  where: { languageId: languageCode },
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        { model: OrderDeliveryAddress },
-        {
-          model: User,
-        },
-        { model: OrderDeliveryAddress },
-
         {
           model: LocationName,
           include: [
@@ -336,151 +277,33 @@ router.get("/:lang/:id", auth, async (req, res) => {
       ],
     });
 
-    let extras = [];
-    let deliveryAddress = [];
-    let allergenName = [];
-    let extrasArray = [];
-    let orderId;
-    let orderCreatedAt;
+    let result = [];
+
     if (orders.length != 0) {
       for (let i = 0; i < orders.length; i++) {
-        const resultWithAll = [];
-        orderId = orders[i].encodedKey;
-        let orderItems = orders[i].OrderItems;
-        orderCreatedAt = orders[i].createdAt.toLocaleString("en-GB", {
-          timeZone: "Europe/Helsinki",
-        });
-
-        const deliveryItems = {
-          door_number: orders[i].OrderDeliveryAddress.doorNumber,
-          floor: orders[i].OrderDeliveryAddress.floor,
-          house_number: orders[i].OrderDeliveryAddress.houseNumber,
-          street: orders[i].OrderDeliveryAddress.street,
-          city: orders[i].LocationName.LocationNameTranslations[0].name,
+        const resultArr = {
+          id: orders[i].encodedKey,
         };
-        deliveryAddress.push(deliveryItems);
-        for (let j = 0; j < orderItems.length; j++) {
-          extras = orderItems[j].OrderItemExtras;
+        result.push(resultArr);
 
-          let prodFin = orderItems[j].Variant.ProductFinals;
-          for (let h = 0; h < prodFin.length; h++) {
-            for (
-              let s = 0;
-              s < prodFin[h].Product.ProductHasAllergens.length;
-              s++
-            ) {
-              allergenName.push(
-                prodFin[h].Product.ProductHasAllergens[s].Allergen
-                  .AllergenTranslations[0].name
-              );
-            }
-
-            if (extras.length == 0) {
-              let totalProductPrice = 0;
-
-              totalProductPrice +=
-                parseFloat(orderItems[j].variantPrice) *
-                parseInt(orderItems[j].quantity);
-              const items = {
-                orderItemId: orderItems[j].id,
-
-                product_id: prodFin[h].productId,
-                product_quantity: orderItems[j].quantity,
-                message: orderItems[j].message,
-                product_imageUrl: prodFin[h].Product.productImagePath,
-                product_price: orderItems[j].variantPrice,
-                product_name: prodFin[h].Product.ProductTranslations[0].title,
-                product_description:
-                  prodFin[h].Product.ProductTranslations[0].description,
-                total_product_price: totalProductPrice,
-                allergenName,
-              };
-
-              resultWithAll.push(items);
-            } else {
-              for (let k = 0; k < extras.length; k++) {
-                extrasArray.push(extras[k]);
-                let totalProductPrice = 0;
-                let totalExtraPrice = 0;
-
-                totalProductPrice +=
-                  parseFloat(orderItems[j].variantPrice) *
-                  parseInt(orderItems[j].quantity);
-                totalExtraPrice +=
-                  parseFloat(extras[k].extraPrice) *
-                  parseInt(extras[k].quantity);
-                const items = {
-                  orderItemId: orderItems[j].id,
-                  product_id: prodFin[h].productId,
-                  product_imageUrl: prodFin[h].Product.productImagePath,
-                  product_quantity: orderItems[j].quantity,
-                  product_price: orderItems[j].variantPrice,
-                  product_name: prodFin[h].Product.ProductTranslations[0].title,
-                  extra_id: extras[k].extraId,
-                  extra_quantity: extras[k].quantity,
-                  extra_price: extras[k].extraPrice,
-                  extra_name: extras[k].Extra.ExtraTranslations[0].name,
-                  total_product_price: totalProductPrice,
-                  total_extra_price: totalExtraPrice,
-                  message: orderItems[j].message,
-                  product_description:
-                    prodFin[h].Product.ProductTranslations[0].description,
-                  allergenName: allergenName,
-                };
-
-                resultWithAll.push(items);
-              }
-            }
-          }
-        }
-
-        const result = resultWithAll.reduce((acc, val) => {
-          const {
-            extra_id,
-            extra_quantity,
-            extra_price,
-            extra_name,
-            ...otherFields
-          } = val;
-
-          const existing = acc.find(
-            (item) => item.orderItemId === val.orderItemId
-          );
-          if (!existing) {
-            acc.push({
-              ...otherFields,
-              extras: [
-                {
-                  extra_id,
-                  extra_quantity,
-                  extra_price,
-                  extra_name,
-                },
-              ],
-            });
-            return acc;
-          }
-
-          existing.extras.push({
-            extra_id,
-            extra_quantity,
-            extra_price,
-            extra_name,
-          });
-          return acc;
-        }, []);
-        orders[i].products = result;
-
-        return res.json({
-          status: 200,
-          msg: "Order detail successfully opened",
-          result,
-          deliveryAddress,
-          orderId,
-          orderCreatedAt,
-        });
+        // orderId = orders[i].encodedKey;
+        // let orderItems = orders[i].OrderItems;
+        // orderCreatedAt = orders[i].createdAt.toLocaleString("en-GB", {
+        //   timeZone: "Europe/Helsinki",
+        // });
       }
+    } else {
+      return res.json({
+        status: 404,
+        msg: "Order not found",
+        result: [],
+      });
     }
+    return res.json({
+      status: 200,
+      msg: "Order detail successfully opened",
+      result,
+    });
   } catch (error) {
     console.log(error);
     return res.json({
