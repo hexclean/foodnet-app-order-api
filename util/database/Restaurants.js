@@ -1,6 +1,7 @@
 const Language = require("../../models/Language");
-const Restaurant = require("../../models/Restaurant");
 const RestaurantInfo = require("../../models/RestaurantInfo");
+const Restaurant = require("../../models/Restaurant");
+const RestaurantNoti = require("../../models/RestaurantNoti");
 const RestaurantRole = require("../../models/RestaurantRole");
 const RestaurantsReviews = require("../../models/RestaurantsReviews");
 
@@ -11,6 +12,17 @@ function restaurants() {
     foreignKey: "restaurantId",
   });
   Restaurant.hasMany(RestaurantInfo, { foreignKey: "restaurantId" });
+
+  //
+
+  RestaurantNoti.belongsTo(Restaurant, {
+    constrains: true,
+    onDelete: "CASCADE",
+    foreignKey: "restaurantId",
+  });
+  Restaurant.hasMany(RestaurantNoti, { foreignKey: "restaurantId" });
+
+  //
 
   RestaurantInfo.belongsTo(Language, {
     constrains: true,

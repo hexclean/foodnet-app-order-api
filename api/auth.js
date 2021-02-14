@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const { check, validationResult } = require("express-validator");
 const Restaurant = require("../models/Restaurant");
+const RestaurantNoti = require("../models/RestaurantNoti");
 const mailgun = require("mailgun-js");
 const DOMAIN = "mg.foodnet.ro";
 const api_key = "7003ff515d7bf9a71de74c7a64d7562c-c50a0e68-93ac4f33";
@@ -74,6 +75,13 @@ router.post(
             result: [{ token: token }],
           });
         }
+      );
+
+      await RestaurantNoti.update(
+        {
+          deviceToken: req.body.token,
+        },
+        { where: { restaurantId: admin.id } }
       );
     } catch (err) {
       console.log(err);
