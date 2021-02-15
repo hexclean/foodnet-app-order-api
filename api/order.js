@@ -403,50 +403,55 @@ router.get("/cronjobhueckztxc", auth, async (req, res) => {
     const restaurant = await Restaurant.findAll({
       include: [{ model: RestaurantNoti }],
     });
-    let restaurantDeviceToken = [
-      "test",
-      "dk2NzSoPqEwmlBA2Op2aOo:APA91bH_4T5dg9I3uwMwxfqU5eN7p67zCO3DlhCzP5eJHFvI3Ty_hpScj2GKhHS-bQ4bUzrgDg-F7WyRcX7EXXVc-aUEfDdsuw76eL4v0yEhKhQ00xCSqVElAUYsP7RLg6NoZwIP-Sxs",
-    ];
+    let restaurantDeviceToken = [];
     for (let i = 0; i < restaurant.length; i++) {
       console.log(i);
-      // restaurantDeviceToken.push(restaurant.RestaurantNotis[i].deviceToken);
-      // console.log(restaurantDeviceToken);
-      await Restaurant.findAll({
-        include: [
-          {
-            model: RestaurantNoti,
-            where: {
-              deviceToken: restaurantDeviceToken,
-            },
-          },
-          { model: Order, where: { orderStatusId: 1 } },
-        ],
-      }).then((order) => {
-        orders.push(order);
-      });
-    }
+      let getToken = restaurant[i].RestaurantNotis;
+      for (let j = 0; j < getToken.length; j++) {
+        restaurantDeviceToken.push(getToken[j].deviceToken);
 
+        const order = await Restaurant.findAll({
+          include: [
+            {
+              model: RestaurantNoti,
+              where: {
+                deviceToken: restaurantDeviceToken,
+              },
+            },
+            { model: Order, where: { orderStatusId: 1 } },
+          ],
+        });
+        if (order[i] != undefined) {
+          const items = {
+            restaurantId: order[i].id,
+            deviceToken: order[i].id,
+          };
+          var message = {
+            data: {
+              //This is only optional, you can send any data
+              score: "850",
+              time: "2:45",
+            },
+            notification: {
+              title: "Title of notification",
+              body: "Body of notification",
+            },
+            token: Tokens,
+          };
+          fcm.sendToMultipleToken(message, Tokens, function (err, response) {
+            if (err) {
+              console.log("error found", err);
+            } else {
+              console.log("response here", response);
+            }
+          });
+          orders.push(items);
+        }
+      }
+    }
     // if (orders.length != 0) {
     //   for (let i = 0; i < orders.length; i++) {
-    //     //   var message = {
-    //     //     data: {
-    //     //       //This is only optional, you can send any data
-    //     //       score: "850",
-    //     //       time: "2:45",
-    //     //     },
-    //     //     notification: {
-    //     //       title: "Title of notification",
-    //     //       body: "Body of notification",
-    //     //     },
-    //     //     token: Tokens,
-    //     //   };
-    //     //   fcm.sendToMultipleToken(message, Tokens, function (err, response) {
-    //     //     if (err) {
-    //     //       console.log("error found", err);
-    //     //     } else {
-    //     //       console.log("response here", response);
-    //     //     }
-    //     //   });
+
     //     // }
     //     // } else {
     //     //   return res.json({
