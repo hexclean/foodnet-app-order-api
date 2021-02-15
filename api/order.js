@@ -26,10 +26,19 @@ const AllergenTranslation = require("../models/AllergenTranslation");
 const Cryptr = require("cryptr");
 const Sequelize = require("sequelize");
 const Restaurant = require("../models/Restaurant");
-const Box = require("../models/Box");
+const RestaurantNoti = require("../models/RestaurantNoti");
 const mailgun = require("mailgun-js");
 const DOMAIN = "mg.foodnet.ro";
 const api_key = "7003ff515d7bf9a71de74c7a64d7562c-c50a0e68-93ac4f33";
+var FCM = require("fcm-notification");
+var serverKey = require("../firebase-noti/foodnet-order-noti.json");
+var Tokens = [
+  "dZiQVCYQRU-mJX6ApDRpLC:APA91bHFjx3pYFYywrADDZ65KKZDYzh5OhSNK9PHJw7c0WxuqmJrptpGyqFSxN34e-AR15h9JXYe6ckpHJZyxjuKsz0UfiA9iIvOh_nGTgtn_xLCmAFk60GHKj_peFBlaMYqlA1u_a66",
+  "dadsad",
+];
+
+var fcm = new FCM(serverKey);
+
 const mg = mailgun({
   apiKey: api_key,
   domain: DOMAIN,
@@ -306,7 +315,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
   });
 });
 
-router.get("/:lang", auth, async (req, res) => {
+router.get("/:lang/order-list", auth, async (req, res) => {
   try {
     let languageCode;
 
@@ -353,10 +362,105 @@ router.get("/:lang", auth, async (req, res) => {
         result: [],
       });
     }
+    var message = {
+      data: {
+        //This is only optional, you can send any data
+        score: "850",
+        time: "2:45",
+      },
+      notification: {
+        title: "Title of notification",
+        body: "Body of notification",
+      },
+      token: Tokens,
+    };
+
+    fcm.sendToMultipleToken(message, Tokens, function (err, response) {
+      if (err) {
+        console.log("error found", err);
+      } else {
+        console.log("response here", response);
+      }
+    });
     return res.json({
       status: 200,
       msg: "Order detail successfully opened",
       result,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 500,
+      msg: "Server error",
+      result: [],
+    });
+  }
+});
+
+router.get("/cronjobhueckztxc", auth, async (req, res) => {
+  try {
+    const orders = [];
+    const restaurant = await Restaurant.findAll({
+      include: [{ model: RestaurantNoti }],
+    });
+    let restaurantDeviceToken = [
+      "test",
+      "dk2NzSoPqEwmlBA2Op2aOo:APA91bH_4T5dg9I3uwMwxfqU5eN7p67zCO3DlhCzP5eJHFvI3Ty_hpScj2GKhHS-bQ4bUzrgDg-F7WyRcX7EXXVc-aUEfDdsuw76eL4v0yEhKhQ00xCSqVElAUYsP7RLg6NoZwIP-Sxs",
+    ];
+    for (let i = 0; i < restaurant.length; i++) {
+      console.log(i);
+      // restaurantDeviceToken.push(restaurant.RestaurantNotis[i].deviceToken);
+      // console.log(restaurantDeviceToken);
+      await Restaurant.findAll({
+        include: [
+          {
+            model: RestaurantNoti,
+            where: {
+              deviceToken: restaurantDeviceToken,
+            },
+          },
+          { model: Order, where: { orderStatusId: 1 } },
+        ],
+      }).then((order) => {
+        orders.push(order);
+      });
+    }
+
+    // if (orders.length != 0) {
+    //   for (let i = 0; i < orders.length; i++) {
+    //     //   var message = {
+    //     //     data: {
+    //     //       //This is only optional, you can send any data
+    //     //       score: "850",
+    //     //       time: "2:45",
+    //     //     },
+    //     //     notification: {
+    //     //       title: "Title of notification",
+    //     //       body: "Body of notification",
+    //     //     },
+    //     //     token: Tokens,
+    //     //   };
+    //     //   fcm.sendToMultipleToken(message, Tokens, function (err, response) {
+    //     //     if (err) {
+    //     //       console.log("error found", err);
+    //     //     } else {
+    //     //       console.log("response here", response);
+    //     //     }
+    //     //   });
+    //     // }
+    //     // } else {
+    //     //   return res.json({
+    //     //     status: 404,
+    //     //     msg: "Order not found",
+    //     //     result: [],
+    //     //   });
+    //   }
+    // }
+
+    return res.json({
+      status: 200,
+      msg: "Order detail successfully opened",
+      orders,
     });
   } catch (error) {
     console.log(error);

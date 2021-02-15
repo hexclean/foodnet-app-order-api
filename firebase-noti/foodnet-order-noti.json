@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "foodnet-order-app-noti",
+  "private_key_id": "ceac3a90f58ffb04472c2691316162a7c7a1082c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDO9zOB1Seu/5Oj\nhq/q13RHA0EF8x3Kg56eoiPZ/2FXWsKeq4m6o2yjHkNtqJr8hvkvKt7jpE5vfVFS\nzqW4GV9e8WqeR53LL/qLBjHhim7+W/MWcwO3GEEycUUCTIL5C6C6JBWwuY9yTd4Q\nYkIMXMxYyDj2slnBabNPauDfKykCC3hDb3L304HGnDDv87YfOKRqrgBO4NarozOh\nPdnxPmLw62C0dv9Ha34hza9EI5en+kVkqdn48a6sqjvp46E1FW7v/fA1vR6pRKsi\nangl2kAJGk1wb0zalJIuJ/5xvRoQT0H3S8khT79yWEfh2aRg5mM/pF8+GafPwjCA\nBJH89iejAgMBAAECggEAQaGNkWH1ZB7DBEvNVHT/eBd1krvuWg6UCe0T3mkIRsnO\nxr9R/UAezrllm4woneT1dzoqlVjA0MUWOWKzlaZiInr/GvNN/CWaV2TfA41BNmMV\nOqy9ZF4KKsNVpW166RwBW5Xe1Px7Gz3LKjnmhQIWgR75RW34XYe153zWk56dsfo7\n7nAAlJX40yj23wisEut6a5+UPKgM/O5I3Y4uFUXV9KzFzv0tLxXqCGHxAJY1k8j+\ntrMO6a82Qc0GEy0m3H7pI16uGcgxhpUyCzQLuxo7+cBaTJIrUv9/BDanZ5ynbYWi\nd8e9Ijk2GOc7zArzrkknj1Dl9fdD4hsuOEbvcMQ1fQKBgQDzuYCpoTACXO8HnW/H\nXY7P6blm8L7Bn1msRGCpAb/z+LlACeUNQbyxU25vpg7DJUa3pH0Ip3oEIifvXfkL\nnWePaQnSR7nZxrmrWovPDIepwEDnU22fGPIceCW7mEVJSYlYWS+gR937L5VnEs3E\nWIKM0bcZlhlY4lWB6WK5vwpHJwKBgQDZY73PRk94n7l3fiOkHTXmkrSusx42avdz\nLOjGSuOBp+dme1fFcJ7tP4z5e/t9Z0r2C5bJ204Rnk6KQe5qMCFY3NsUsRDIy6v5\nF+Fu05csS0WWdm4MUe43NnWcs0TeGKTv8BWIlGKXz0aAEllj0IeWJeKdErD2ohlN\nnwZprCqJJQKBgQCK7h1nlJh3YF5pKteC/9PetM6Y3Xb/jERjrH6lGHhBLHD9Dibh\nTa2wL2zue+xCVUdge4VCn6UwIgA9tIW4lztnRmrw0S4h8+P2x6CWn//dRdg5hRch\n7+hjTiHEM+KbCi4ejIhXh2AERXWW0eM1n3abqxgCn8tHHY28hjtewoWrVQKBgQDP\neZYqQNyQL0D/fm/drdNHoDS5l1H6ddR9JBt1RPwlPm5nLMj0Myw7GjAd2+qGIRM2\nCJF9TcUQo5op8grtZcot2XtuIB/4xAn5zoTlFSRurdhYZedZ8sf8Agn16FKN9c9V\nADpNA/GlGbobeWe/D8KX1siVSMWEXejwYBnquNpP0QKBgFJgVQfCQebGgKrmYVk2\n1oapW5tzXMqNjWcOdfQsKXmPNnpk6NGWvO2CGo8KO8DLGYK5neOd8o+Wjqwi9+wq\nRrFvZ+JcKEIcnwbrjHsDp2vnHeIH3nPPba2dk48TD3Ua5cIZJcrGCyd4NDN3RsxF\n4YjYtckynR39ZMxLoapKpxP0\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-w5jzp@foodnet-order-app-noti.iam.gserviceaccount.com",
+  "client_id": "110252828339944990161",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-w5jzp%40foodnet-order-app-noti.iam.gserviceaccount.com"
+}
