@@ -29,7 +29,7 @@ const Restaurant = require("../models/Restaurant");
 const Box = require("../models/Box");
 const mailgun = require("mailgun-js");
 const DOMAIN = "mg.foodnet.ro";
-const api_key = "7003ff515d7bf9a71de74c7a64d7562c-c50a0e68-93ac4f33";
+const api_key = "339804bc04a75f14fe62d0f13c85e08b";
 const mg = mailgun({
   apiKey: api_key,
   domain: DOMAIN,

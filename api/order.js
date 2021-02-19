@@ -1,41 +1,26 @@
 const express = require("express");
 const router = express.Router();
-var request = require("request");
-const orderUser = require("../middleware/orderUser");
 const OrderItemExtra = require("../models/OrderItemExtra");
 const Order = require("../models/Order");
 const Extra = require("../models/Extra");
 const User = require("../models/User");
-const UserDeliveryAddress = require("../models/UserDeliveryAddress");
 const OrderItem = require("../models/OrderItem");
-const ProductVariantExtras = require("../models/ProductVariantsExtras");
 const ProductFinal = require("../models/ProductFinal");
-const RestaurantReview = require("../models/RestaurantsReviews");
 const LocationName = require("../models/LocationName");
 const OrderDeliveryAddress = require("../models/OrderDeliveryAddress");
-var ejs = require("ejs");
 const auth = require("../middleware/auth");
 const Variant = require("../models/Variant");
 const Product = require("../models/Product");
 const ProductTranslation = require("../models/ProductTranslation");
 const ExtraTranslation = require("../models/ExtraTranslation");
 const LocationNameTranslation = require("../models/LocationNameTranslation");
-const ProductHasAllergen = require("../models/ProductHasAllergen");
-const Allergen = require("../models/Allergen");
-const AllergenTranslation = require("../models/AllergenTranslation");
-const Cryptr = require("cryptr");
-const Sequelize = require("sequelize");
 const Restaurant = require("../models/Restaurant");
 const RestaurantNoti = require("../models/RestaurantNoti");
 const mailgun = require("mailgun-js");
 const DOMAIN = "mg.foodnet.ro";
-const api_key = "7003ff515d7bf9a71de74c7a64d7562c-c50a0e68-93ac4f33";
+const api_key = "3397hjl89804bc04a75f14fe62d0f13c85e08b";
 var FCM = require("fcm-notification");
 var serverKey = require("../firebase-noti/foodnet-order-noti.json");
-var Tokens = [
-  "dZiQVCYQRU-mJX6ApDRpLC:APA91bHFjx3pYFYywrADDZ65KKZDYzh5OhSNK9PHJw7c0WxuqmJrptpGyqFSxN34e-AR15h9JXYe6ckpHJZyxjuKsz0UfiA9iIvOh_nGTgtn_xLCmAFk60GHKj_peFBlaMYqlA1u_a66",
-  "dadsad",
-];
 
 var fcm = new FCM(serverKey);
 
@@ -362,26 +347,7 @@ router.get("/:lang/order-list", auth, async (req, res) => {
         result: [],
       });
     }
-    var message = {
-      data: {
-        //This is only optional, you can send any data
-        score: "850",
-        time: "2:45",
-      },
-      notification: {
-        title: "Title of notification",
-        body: "Body of notification",
-      },
-      token: Tokens,
-    };
 
-    fcm.sendToMultipleToken(message, Tokens, function (err, response) {
-      if (err) {
-        console.log("error found", err);
-      } else {
-        console.log("response here", response);
-      }
-    });
     return res.json({
       status: 200,
       msg: "Order detail successfully opened",
@@ -400,72 +366,85 @@ router.get("/:lang/order-list", auth, async (req, res) => {
 router.get("/cronjobhueckztxc", auth, async (req, res) => {
   try {
     const orders = [];
-    const restaurant = await Restaurant.findAll({
-      include: [{ model: RestaurantNoti }],
+    const checkDevice = await Order.findAll({
+      where: { orderStatusId: 1 },
+      include: [{ model: Restaurant, include: [{ model: RestaurantNoti }] }],
     });
+    let restaurantLang = checkDevice.lang;
     let restaurantDeviceToken = [];
-    for (let i = 0; i < restaurant.length; i++) {
-      console.log(i);
-      let getToken = restaurant[i].RestaurantNotis;
-      for (let j = 0; j < getToken.length; j++) {
-        restaurantDeviceToken.push(getToken[j].deviceToken);
+    for (let i = 0; i < checkDevice.length; i++) {
+      restaurantDeviceToken.push(
+        checkDevice[i].Restaurant.RestaurantNotis[0].deviceToken
+      );
+    }
+    console.log(restaurantDeviceToken);
+    // if (restaurantLang == "hu") {
+    var message = {
+      data: {
+        //This is only optional, you can send any data
+        score: "850",
+        time: "2:45",
+      },
 
-        const order = await Restaurant.findAll({
-          include: [
-            {
-              model: RestaurantNoti,
-              where: {
-                deviceToken: restaurantDeviceToken,
-              },
-            },
-            { model: Order, where: { orderStatusId: 1 } },
-          ],
-        });
-        if (order[i] != undefined) {
-          const items = {
-            restaurantId: order[i].id,
-            deviceToken: order[i].id,
-          };
-          var message = {
-            data: {
-              //This is only optional, you can send any data
-              score: "850",
-              time: "2:45",
-            },
-            notification: {
-              title: "Title of notification",
-              body: "Body of notification",
-            },
-            token: Tokens,
-          };
-          fcm.sendToMultipleToken(message, Tokens, function (err, response) {
-            if (err) {
-              console.log("error found", err);
-            } else {
-              console.log("response here", response);
-            }
-          });
-          orders.push(items);
+      notification: {
+        title: "FOODNET EMLÉKEZTETŐ",
+        body: "Új rendelésed érkezett",
+        // sound: "default",
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+          },
+        },
+      },
+      token: restaurantDeviceToken,
+      // sound: "default",
+    };
+    await fcm.sendToMultipleToken(
+      message,
+      restaurantDeviceToken,
+      function (err, response) {
+        if (err) {
+          console.log("error found", err);
+        } else {
+          console.log("response here", response);
         }
       }
-    }
-    // if (orders.length != 0) {
-    //   for (let i = 0; i < orders.length; i++) {
-
-    //     // }
-    //     // } else {
-    //     //   return res.json({
-    //     //     status: 404,
-    //     //     msg: "Order not found",
-    //     //     result: [],
-    //     //   });
-    //   }
+    );
     // }
+    // else {
+    //   var message = {
+    //     data: {
+    //       //This is only optional, you can send any data
+    //       score: "850",
+    //       time: "2:45",
+    //     },
+    //     notification: {
+    //       title: "FOODNET EMLÉKEZTETŐ",
+    //       body: "Új rendelésed érkezett",
+    //       // sound: "default",
+    //     },
+    //     token: restaurantDeviceToken,
+    //     // sound: "default",
+    //   };
+    //   await fcm.sendToMultipleToken(
+    //     message,
+    //     restaurantDeviceToken,
 
+    //     function (err, response) {
+    //       if (err) {
+    //         console.log("error found", err);
+    //       } else {
+    //         console.log("response here", response);
+    //       }
+    //     }
+    //   );
+    // }
     return res.json({
       status: 200,
       msg: "Order detail successfully opened",
-      orders,
+      restaurantDeviceToken,
     });
   } catch (error) {
     console.log(error);
