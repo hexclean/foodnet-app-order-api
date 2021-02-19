@@ -300,7 +300,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
   });
 });
 
-router.get("/:lang/order-list", auth, async (req, res) => {
+router.get("/:lang/order-list/accepted", auth, async (req, res) => {
   try {
     let languageCode;
 
@@ -326,7 +326,6 @@ router.get("/:lang/order-list", auth, async (req, res) => {
     });
 
     let result = [];
-
     if (orders.length != 0) {
       for (let i = 0; i < orders.length; i++) {
         const resultArr = {
