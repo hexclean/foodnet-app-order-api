@@ -341,7 +341,7 @@ router.get("/:lang/order-list/new", auth, async (req, res) => {
       }
     } else {
       return res.json({
-        status: 404,
+        status: 200,
         msg: "Order not found",
         result: [],
       });
@@ -403,7 +403,7 @@ router.get("/:lang/order-list/accepted", auth, async (req, res) => {
       }
     } else {
       return res.json({
-        status: 404,
+        status: 200,
         msg: "Order not found",
         result: [],
       });
@@ -465,7 +465,7 @@ router.get("/:lang/order-list/rejected", auth, async (req, res) => {
       }
     } else {
       return res.json({
-        status: 404,
+        status: 200,
         msg: "Order not found",
         result: [],
       });
