@@ -45,7 +45,6 @@ router.get("/:lang/:id", auth, async (req, res) => {
   }
 
   const orders = await Order.findAll({
-    order: [["createdAt", "DESC"]],
     where: {
       orderStatusId: 1,
       restaurantId: req.admin.id,
@@ -107,7 +106,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
       },
     ],
   });
-  let getRestaurantId;
+
   let deliveryPriceCity;
   let extras = [];
   let total;
@@ -126,6 +125,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
   let locationId;
   let messageCourier;
   let deliveryPriceVillage;
+
   for (let i = 0; i < orders.length; i++) {
     const resultWithAll = [];
     let orderItems = orders[i].OrderItems;
@@ -312,6 +312,130 @@ router.get("/:lang/order-list/new", auth, async (req, res) => {
     const orders = await Order.findAll({
       order: [["createdAt", "DESC"]],
       where: { restaurantId: req.admin.id, orderStatusId: 1 },
+      include: [
+        {
+          model: LocationName,
+          include: [
+            {
+              model: LocationNameTranslation,
+              where: { languageId: languageCode },
+            },
+          ],
+        },
+      ],
+    });
+
+    let result = [];
+    if (orders.length != 0) {
+      for (let i = 0; i < orders.length; i++) {
+        const resultArr = {
+          id: orders[i].encodedKey,
+          location: orders[i].LocationName.LocationNameTranslations[0].name,
+          totalPrice: orders[i].totalPrice,
+          createdAt: orders[i].createdAt.toLocaleString("en-GB", {
+            timeZone: "Europe/Helsinki",
+          }),
+          type: orders[i].orderStatusId,
+        };
+        result.push(resultArr);
+      }
+    } else {
+      return res.json({
+        status: 404,
+        msg: "Order not found",
+        result: [],
+      });
+    }
+
+    return res.json({
+      status: 200,
+      msg: "Order detail successfully opened",
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 500,
+      msg: "Server error",
+      result: [],
+    });
+  }
+});
+
+router.get("/:lang/order-list/accepted", auth, async (req, res) => {
+  try {
+    let languageCode;
+
+    if (req.params.lang == "ro") {
+      languageCode = 1;
+    } else {
+      languageCode = 2;
+    }
+    const orders = await Order.findAll({
+      order: [["createdAt", "DESC"]],
+      where: { restaurantId: req.admin.id, orderStatusId: 2 },
+      include: [
+        {
+          model: LocationName,
+          include: [
+            {
+              model: LocationNameTranslation,
+              where: { languageId: languageCode },
+            },
+          ],
+        },
+      ],
+    });
+
+    let result = [];
+    if (orders.length != 0) {
+      for (let i = 0; i < orders.length; i++) {
+        const resultArr = {
+          id: orders[i].encodedKey,
+          location: orders[i].LocationName.LocationNameTranslations[0].name,
+          totalPrice: orders[i].totalPrice,
+          createdAt: orders[i].createdAt.toLocaleString("en-GB", {
+            timeZone: "Europe/Helsinki",
+          }),
+          type: orders[i].orderStatusId,
+        };
+        result.push(resultArr);
+      }
+    } else {
+      return res.json({
+        status: 404,
+        msg: "Order not found",
+        result: [],
+      });
+    }
+
+    return res.json({
+      status: 200,
+      msg: "Order detail successfully opened",
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 500,
+      msg: "Server error",
+      result: [],
+    });
+  }
+});
+
+router.get("/:lang/order-list/rejected", auth, async (req, res) => {
+  try {
+    let languageCode;
+
+    if (req.params.lang == "ro") {
+      languageCode = 1;
+    } else {
+      languageCode = 2;
+    }
+    const orders = await Order.findAll({
+      order: [["createdAt", "DESC"]],
+      where: { restaurantId: req.admin.id, orderStatusId: 3 },
       include: [
         {
           model: LocationName,
