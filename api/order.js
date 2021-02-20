@@ -44,7 +44,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
     languageCode = 2;
   }
 
-  const orders = await Order.findOne({
+  const orders = await Order.findAll({
     where: {
       orderStatusId: 1,
       restaurantId: req.admin.id,
@@ -2893,6 +2893,7 @@ router.post("/operation", auth, async (req, res) => {
     });
   }
 });
+
 ///
 router.get("/:lang/order-list/accepted/:id", auth, async (req, res) => {
   let languageCode;
@@ -2903,7 +2904,7 @@ router.get("/:lang/order-list/accepted/:id", auth, async (req, res) => {
     languageCode = 2;
   }
 
-  const orders = await Order.findOne({
+  const orders = await Order.findAll({
     where: {
       restaurantId: req.admin.id,
       encodedKey: req.params.id,
@@ -3166,7 +3167,7 @@ router.get("/:lang/order-list/rejected/:id", auth, async (req, res) => {
     languageCode = 2;
   }
 
-  const orders = await Order.findOne({
+  const orders = await Order.findAll({
     where: {
       restaurantId: req.admin.id,
       encodedKey: req.params.id,
