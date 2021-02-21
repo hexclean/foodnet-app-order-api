@@ -7,9 +7,10 @@ const db = {};
 //   port: 25060,
 // });
 
-const sequelize = new Sequelize("foodnetfin", "root", "", {
+sequelize = new Sequelize("defaultdb", "doadmin", "s27c8agot7l7a13z", {
   dialect: "mysql",
-  host: "localhost",
+  host: "foodnet-database-do-user-8133521-0.b.db.ondigitalocean.com",
+  port: 25060,
 });
 
 db.sequelize = sequelize;
