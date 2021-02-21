@@ -500,11 +500,9 @@ router.get("/cronjobhueckztxc", auth, async (req, res) => {
         checkDevice[i].Restaurant.RestaurantNotis[0].deviceToken
       );
     }
-    console.log(restaurantDeviceToken);
-    // if (restaurantLang == "hu") {
+
     var message = {
       data: {
-        //This is only optional, you can send any data
         score: "850",
         time: "2:45",
       },
@@ -512,7 +510,6 @@ router.get("/cronjobhueckztxc", auth, async (req, res) => {
       notification: {
         title: "FOODNET EMLÉKEZTETŐ",
         body: "Új rendelésed érkezett",
-        // sound: "default",
       },
       apns: {
         payload: {
@@ -522,7 +519,6 @@ router.get("/cronjobhueckztxc", auth, async (req, res) => {
         },
       },
       token: restaurantDeviceToken,
-      // sound: "default",
     };
     await fcm.sendToMultipleToken(
       message,
