@@ -49,7 +49,7 @@ router.post(
       if (req.body.code != 123456) {
         return res.json({
           status: 400,
-          msg: "Code incorrect incorrect",
+          msg: "Code incorrect",
           result: [],
         });
       }
