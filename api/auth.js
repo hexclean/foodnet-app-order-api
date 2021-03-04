@@ -34,7 +34,7 @@ router.post(
       });
     }
 
-    const { email, password } = req.body;
+    const { email, password, code } = req.body;
 
     try {
       let admin = await Restaurant.findOne({ where: { email: email } });
@@ -46,7 +46,7 @@ router.post(
           result: [],
         });
       }
-      if (req.body.code != 123456) {
+      if (code != 123456) {
         return res.json({
           status: 400,
           msg: "Code incorrect",
