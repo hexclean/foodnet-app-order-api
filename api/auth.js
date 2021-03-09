@@ -37,7 +37,9 @@ router.post(
     const { email, password, code } = req.body;
 
     try {
-      let admin = await Restaurant.findOne({ where: { email: email } });
+      let admin = await Restaurant.findOne({
+        where: { email: email, code: code },
+      });
 
       if (!admin) {
         return res.json({
@@ -46,13 +48,7 @@ router.post(
           result: [],
         });
       }
-      // if (code != 123456) {
-      //   return res.json({
-      //     status: 400,
-      //     msg: "Code incorrect",
-      //     result: [],
-      //   });
-      // }
+
       const isMatch = await bcrypt.compare(password, admin.password);
 
       if (!isMatch) {
