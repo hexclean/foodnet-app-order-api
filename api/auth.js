@@ -48,7 +48,13 @@ router.post(
           result: [],
         });
       }
-
+      // if (code != 123456) {
+      //   return res.json({
+      //     status: 400,
+      //     msg: "Code incorrect",
+      //     result: [],
+      //   });
+      // }
       const isMatch = await bcrypt.compare(password, admin.password);
 
       if (!isMatch) {
