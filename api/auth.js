@@ -39,6 +39,7 @@ router.post(
     try {
       let admin = await Restaurant.findOne({
         where: { email: email },
+        include: [{ model: RestaurantNoti, where: { code: code } }],
       });
 
       if (!admin) {
