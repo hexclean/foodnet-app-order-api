@@ -1,4 +1,5 @@
 const express = require("express");
+var request = require("request");
 const router = express.Router();
 const OrderItemExtra = require("../models/OrderItemExtra");
 const Order = require("../models/Order");
@@ -531,35 +532,7 @@ router.get("/cronjobhueckztxcfoodnety7", auth, async (req, res) => {
         }
       }
     );
-    // }
-    // else {
-    //   var message = {
-    //     data: {
-    //       //This is only optional, you can send any data
-    //       score: "850",
-    //       time: "2:45",
-    //     },
-    //     notification: {
-    //       title: "FOODNET EMLÉKEZTETŐ",
-    //       body: "Új rendelésed érkezett",
-    //       // sound: "default",
-    //     },
-    //     token: restaurantDeviceToken,
-    //     // sound: "default",
-    //   };
-    //   await fcm.sendToMultipleToken(
-    //     message,
-    //     restaurantDeviceToken,
 
-    //     function (err, response) {
-    //       if (err) {
-    //         console.log("error found", err);
-    //       } else {
-    //         console.log("response here", response);
-    //       }
-    //     }
-    //   );
-    // }
     return res.json({
       status: 200,
       msg: "Order detail successfully opened",
@@ -1053,7 +1026,7 @@ router.post("/operation", auth, async (req, res) => {
             </head>
             <body>
               <span class="preheader"
-                >Köszönjük, hogy regisztráltál a Foodnet rendszerébe. Igérjük, hogy izgalmas meglepetésekben...</span
+                >A(z) ${restaurantName} sikeresen elfogadta a rendelésed, melynek rendelési száma: ${orderId}. A rendelésed várhatóan ${minutes} perc múlva érkezik. További információkért az étterem telefonszámán érdeklődhetsz: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
               >
               <table
                 class="email-wrapper"
@@ -1158,18 +1131,18 @@ router.post("/operation", auth, async (req, res) => {
               json: true,
             },
             function (error, response, body) {
-              console.log(error);
-              console.log(response);
-              console.log(body);
+              // console.log(error);
+              // console.log(response);
+              // console.log(body);
             }
           );
         }
-        // await sendSms();
-        // await mg.messages().send(data, function (error, body) {
-        //   if (error) {
-        //     console.log(error);
-        //   }
-        // });
+        await sendSms();
+        await mg.messages().send(data, function (error, body) {
+          if (error) {
+            console.log(error);
+          }
+        });
       } else {
         var jsonDataObj = {
           to: orderedUserPhoneNumber,
@@ -1188,9 +1161,9 @@ router.post("/operation", auth, async (req, res) => {
               json: true,
             },
             function (error, response, body) {
-              console.log(error);
-              console.log(response);
-              console.log(body);
+              // console.log(error);
+              // console.log(response);
+              // console.log(body);
             }
           );
         }
@@ -1198,7 +1171,7 @@ router.post("/operation", auth, async (req, res) => {
         const data = {
           from: "info@foodnet.ro",
           to: orderedUserEmail,
-          subject: "Kiszállítási idő",
+          subject: `Foodnet - Meniul comandat va fi livrat aproximativ în ${minutes} minute.`,
           html: `
              
           <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -1642,7 +1615,7 @@ router.post("/operation", auth, async (req, res) => {
             </head>
             <body>
               <span class="preheader"
-                >Köszönjük, hogy regisztráltál a Foodnet rendszerébe. Igérjük, hogy izgalmas meglepetésekben...</span
+                >Restaurantul ${restaurantName} a acceptar comanda dvs. cu numărul: ${orderId}. Meniul comandat va fi livrat aproximativ în ${minutes} minute. Pentru alte informații sunați la nr. telefon al restaurantului: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
               >
               <table
                 class="email-wrapper"
@@ -1736,12 +1709,12 @@ router.post("/operation", auth, async (req, res) => {
           </html>        
           `,
         };
-        // await sendSms();
-        // await mg.messages().send(data, function (error, body) {
-        //   if (error) {
-        //     console.log(error);
-        //   }
-        // });
+        await sendSms();
+        await mg.messages().send(data, function (error, body) {
+          if (error) {
+            console.log(error);
+          }
+        });
       }
     }
 
@@ -2203,7 +2176,7 @@ router.post("/operation", auth, async (req, res) => {
             </head>
             <body>
               <span class="preheader"
-                >Köszönjük, hogy regisztráltál a Foodnet rendszerébe. Igérjük, hogy izgalmas meglepetésekben...</span
+                >A(z) ${restaurantName} elutasította a rendelésed, melynek rendelési száma: ${orderId}. Az elutasítás oka a következő: ${failedDescription}. További információkért az étterem telefonszámán érdeklődhetsz: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
               >
               <table
                 class="email-wrapper"
@@ -2297,22 +2270,22 @@ router.post("/operation", auth, async (req, res) => {
           </html>        
           `,
         };
-        // async function sendSms() {
-        //   request.post({
-        //     headers: {
-        //       "X-Authorization": "j1HPv95lUhKKF2JJv66zeuGn7sSNFP6bPeWrSv89",
-        //     },
-        //     url: "https://app.smso.ro/api/v1/send",
-        //     body: jsonDataObj,
-        //     json: true,
-        //   });
-        // }
-        // await mg.messages().send(data, function (error, body) {
-        //   if (error) {
-        //     console.log(error);
-        //   }
-        // });
-        // await sendSms();
+        async function sendSms() {
+          request.post({
+            headers: {
+              "X-Authorization": "j1HPv95lUhKKF2JJv66zeuGn7sSNFP6bPeWrSv89",
+            },
+            url: "https://app.smso.ro/api/v1/send",
+            body: jsonDataObj,
+            json: true,
+          });
+        }
+        await mg.messages().send(data, function (error, body) {
+          if (error) {
+            console.log(error);
+          }
+        });
+        await sendSms();
       } else {
         var jsonDataObj = {
           to: orderedUserPhoneNumber,
@@ -2322,7 +2295,7 @@ router.post("/operation", auth, async (req, res) => {
         const data = {
           from: "info@foodnet.ro",
           to: orderedUserEmail,
-          subject: "Kiszállítási idő",
+          subject: "Restaurantul a refuzat comanda dvs :(",
           html: `
              
           <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -2766,7 +2739,7 @@ router.post("/operation", auth, async (req, res) => {
             </head>
             <body>
               <span class="preheader"
-                >Köszönjük, hogy regisztráltál a Foodnet rendszerébe. Igérjük, hogy izgalmas meglepetésekben...</span
+                >Restaurantul ${restaurantName} a refuzat comanda dvs. cu numărul: ${orderId}. Pe motiv de: ${failedDescription}. Pentru alte informații sunați la nr. telefon al restaurantului: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
               >
               <table
                 class="email-wrapper"
@@ -2858,22 +2831,22 @@ router.post("/operation", auth, async (req, res) => {
           </html>        
           `,
         };
-        // async function sendSms() {
-        //   request.post({
-        //     headers: {
-        //       "X-Authorization": "j1HPv95lUhKKF2JJv66zeuGn7sSNFP6bPeWrSv89",
-        //     },
-        //     url: "https://app.smso.ro/api/v1/send",
-        //     body: jsonDataObj,
-        //     json: true,
-        //   });
-        // }
-        // await mg.messages().send(data, function (error, body) {
-        //   if (error) {
-        //     console.log(error);
-        //   }
-        // });
-        // await sendSms();
+        async function sendSms() {
+          request.post({
+            headers: {
+              "X-Authorization": "j1HPv95lUhKKF2JJv66zeuGn7sSNFP6bPeWrSv89",
+            },
+            url: "https://app.smso.ro/api/v1/send",
+            body: jsonDataObj,
+            json: true,
+          });
+        }
+        await mg.messages().send(data, function (error, body) {
+          if (error) {
+            console.log(error);
+          }
+        });
+        await sendSms();
       }
     }
     return res.json({
@@ -2882,6 +2855,7 @@ router.post("/operation", auth, async (req, res) => {
       result: [],
     });
   } catch (error) {
+    console.log(error);
     return res.json({
       status: 500,
       msg: "Server error",

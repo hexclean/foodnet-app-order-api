@@ -9,7 +9,7 @@ const RestaurantNoti = sequelize.define("RestaurantNoti", {
     allowNull: false,
     primaryKey: true,
   },
-
+  code: Sequelize.STRING,
   deviceToken: Sequelize.STRING,
 });
 
