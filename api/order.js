@@ -487,7 +487,7 @@ router.get("/:lang/order-list/rejected", auth, async (req, res) => {
   }
 });
 
-router.get("/cronjobhueckztxcfoodnety7", auth, async (req, res) => {
+router.get("/cronjobhueckztxcfoodnety7", async (req, res) => {
   try {
     const orders = [];
     const checkDevice = await Order.findAll({
