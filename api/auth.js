@@ -90,7 +90,7 @@ router.post(
         {
           deviceToken: req.body.token,
         },
-        { where: { restaurantId: admin.id } }
+        { where: { restaurantId: admin.id, code: code } }
       );
     } catch (err) {
       console.log(err);
