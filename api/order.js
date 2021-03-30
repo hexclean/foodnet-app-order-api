@@ -511,8 +511,8 @@ router.get("/cronjobhueckztxcfoodnety7", async (req, res) => {
       },
 
       notification: {
-        title: "FOODNET EMLÉKEZTETŐ",
-        body: "Új rendelésed érkezett",
+        title: `FOODNET EMLÉKEZTETŐ-${checkDevice[0].Restaurant.fullName}`,
+        body: "Elfelejtett rendelés",
       },
       apns: {
         payload: {
