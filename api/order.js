@@ -218,13 +218,6 @@ router.get("/:lang/:id", auth, async (req, res) => {
     deliveryPriceVillage = orders[0].Restaurant.deliveryPriceVillage;
     deliveryPriceCity = orders[0].Restaurant.deliveryPriceCity;
     locationId = orders[0].locationId;
-    const checkLocId = await LocationName.findByPk(locationId);
-
-    if (checkLocId == 1) {
-      deliveredPrice = deliveryPriceVillage;
-    } else {
-      deliveredPrice = deliveryPriceCity;
-    }
 
     const reduced = resultWithAll.reduce((acc, val) => {
       const {
@@ -274,6 +267,7 @@ router.get("/:lang/:id", auth, async (req, res) => {
       timeZone: "Europe/Helsinki",
     });
     total = orders[0].totalPrice;
+    deliveredPrice = orders[0].deliveryPrice;
     userName = orders[0].OrderDeliveryAddress.userName;
     orderId = orders[0].encodedKey;
     location = orders[0].LocationName.LocationNameTranslations[0].name;
@@ -489,7 +483,6 @@ router.get("/:lang/order-list/rejected", auth, async (req, res) => {
 
 router.get("/cronjobhueckztxcfoodnety7", async (req, res) => {
   try {
-    const orders = [];
     const checkDevice = await Order.findAll({
       where: { orderStatusId: 1 },
       include: [{ model: Restaurant, include: [{ model: RestaurantNoti }] }],
@@ -1022,7 +1015,7 @@ router.post("/operation", auth, async (req, res) => {
             </head>
             <body>
               <span class="preheader"
-                >A(z) ${restaurantName} sikeresen elfogadta a rendelésed, melynek rendelési száma: ${orderId}. A rendelésed várhatóan ${minutes} perc múlva érkezik. További információkért az étterem telefonszámán érdeklődhetsz: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
+                >A(z) ${restaurantName} sikeresen elfogadta a rendelésed, melynek rendelési száma: ${orderId}. A rendelésed várhatóan <u>${minutes} perc</u> múlva érkezik. További információkért az étterem telefonszámán érdeklődhetsz: <a href="tel:${restaurantPhone}">${restaurantPhone}</a>.</span
               >
               <table
                 class="email-wrapper"
