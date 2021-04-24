@@ -215,10 +215,6 @@ router.get("/:lang/:id", auth, async (req, res) => {
       }
     }
 
-    deliveryPriceVillage = orders[0].Restaurant.deliveryPriceVillage;
-    deliveryPriceCity = orders[0].Restaurant.deliveryPriceCity;
-    locationId = orders[0].locationId;
-
     const reduced = resultWithAll.reduce((acc, val) => {
       const {
         extra_id,
@@ -267,11 +263,11 @@ router.get("/:lang/:id", auth, async (req, res) => {
       timeZone: "Europe/Helsinki",
     });
     total = orders[0].totalPrice;
-    deliveredPrice = orders[0].deliveryPrice;
     userName = orders[0].OrderDeliveryAddress.userName;
     orderId = orders[0].encodedKey;
     location = orders[0].LocationName.LocationNameTranslations[0].name;
     messageCourier = orders[0].messageCourier;
+    deliveredPrice = orders[0].deliveryPrice;
   }
 
   res.json({
@@ -2961,17 +2957,6 @@ router.get("/:lang/order-list/accepted/:id", auth, async (req, res) => {
       }
     }
 
-    deliveryPriceVillage = orders[0].Restaurant.deliveryPriceVillage;
-    deliveryPriceCity = orders[0].Restaurant.deliveryPriceCity;
-    locationId = orders[0].locationId;
-    const checkLocId = await LocationName.findByPk(locationId);
-
-    if (checkLocId == 1) {
-      deliveredPrice = deliveryPriceVillage;
-    } else {
-      deliveredPrice = deliveryPriceCity;
-    }
-
     const reduced = resultWithAll.reduce((acc, val) => {
       const {
         extra_id,
@@ -3024,6 +3009,7 @@ router.get("/:lang/order-list/accepted/:id", auth, async (req, res) => {
     orderId = orders[0].encodedKey;
     location = orders[0].LocationName.LocationNameTranslations[0].name;
     messageCourier = orders[0].messageCourier;
+    deliveredPrice = orders[0].deliveryPrice;
   }
 
   res.json({
@@ -3224,17 +3210,6 @@ router.get("/:lang/order-list/rejected/:id", auth, async (req, res) => {
       }
     }
 
-    deliveryPriceVillage = orders[0].Restaurant.deliveryPriceVillage;
-    deliveryPriceCity = orders[0].Restaurant.deliveryPriceCity;
-    locationId = orders[0].locationId;
-    const checkLocId = await LocationName.findByPk(locationId);
-
-    if (checkLocId == 1) {
-      deliveredPrice = deliveryPriceVillage;
-    } else {
-      deliveredPrice = deliveryPriceCity;
-    }
-
     const reduced = resultWithAll.reduce((acc, val) => {
       const {
         extra_id,
@@ -3287,6 +3262,7 @@ router.get("/:lang/order-list/rejected/:id", auth, async (req, res) => {
     orderId = orders[0].encodedKey;
     location = orders[0].LocationName.LocationNameTranslations[0].name;
     messageCourier = orders[0].messageCourier;
+    deliveredPrice = orders[0].deliveryPrice;
   }
 
   res.json({
